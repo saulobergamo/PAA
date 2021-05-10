@@ -1,0 +1,21 @@
+all: grafo
+
+grafo: grafo.o
+	gcc -o grafo grafo.o -lm
+
+grafo.o: grafo.c
+	gcc -c -Wall grafo.c
+
+clean:
+	rm grafo grafo.o
+
+#all: prim
+
+#prim: prim.o
+#	gcc -o prim prim.o -lm
+
+#prim.o: prim.c
+#	gcc -c -Wall prim.c
+
+#clean:
+#	rm prim prim.o
