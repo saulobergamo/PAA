@@ -69,37 +69,54 @@ void free_Grafo(Grafo* grafo);
 Grafo* criar_grafo();
 
 void visita_DFS(Grafo* grafo, Node* aux, int i, int* visita){
-    aux[i].cor = CINZA;
-    *visita = *visita + 1;
-    aux[i].ordem = *visita;
-    Node* temp;
-    for(temp = grafo->lista[i]; temp != NULL; temp = temp->prox){
-        if(aux[temp->pos].cor == BRANCO){
-            aux[temp->pos].pai = i;
-            visita_DFS(grafo, aux, temp->pos, visita);
-        }
-    }
-    aux[i].cor = PRETO;
+//     aux[i].cor = CINZA;
+//     *visita = *visita + 1;
+//     aux[i].ordem = *visita;
+//     Node* temp;
+//     for(temp = grafo->lista[i]; temp != NULL; temp = temp->prox){
+//         if(aux[temp->pos].cor == BRANCO){
+//             aux[temp->pos].pai = i;// atualiza o pai aqui????
+//             visita_DFS(grafo, aux, temp->pos, visita);
+//         }
+//     }
+//     aux[i].cor = PRETO;
+	*visita = *visita + 1;
+	aux[i].ordem = *visita;
+	for(temp = grafo->lista[i]; temp != NULL; temp = temp->prox){
+		if(aux[temp->pos].cor == -1){
+			visita_DFS(grafo, aux, temp->pos, visita);
+		}
+	}
+	
+	
 }
 
 void busca_DFS(Grafo* grafo){
     int visita = 0;
-    Node* aux = (Node*)malloc(sizeof(Node));
+	Node aux[tam];
+	for(int i = 0; i < tam; i++){
+		aux[i].pai = -1;
+		aux[i] = grafo->lista[i];
+	}
+	for(int i = 0; i < tam; i++){
+		if(aux[i].pai = -1)visita_DFS(grafo, aux, i, &visita);
+	}
+//     Node* aux = (Node*)malloc(sizeof(Node));
 
-    for(int i = 0; i < tam; i++){
-        aux[i].cor = BRANCO;
-        aux[i].pai = -1;
-        aux[i] = *grafo->lista[i];
-    }
-    for(int i = 0; i < tam; i++){
-        if(aux[i].cor == BRANCO){
-            visita_DFS(grafo, aux, i, &visita);
-        }
-    }
-    //retornar o que?? // NÃO ESTÁ FUNCIONANDO ESTA MERDA
-    for(int i = 0; i < tam; i++){
-        printf("%d(%d , %d) : ordem %d : pai %d(%d , %d)\n", i, aux[i].x, aux[i].y, aux[i].ordem, aux[i].pai, aux[aux[i].ordem].x, aux[aux[i].ordem].y);
-    }
+//     for(int i = 0; i < tam; i++){
+//         aux[i].cor = BRANCO;
+//         aux[i].pai = -1;
+//         aux[i] = *grafo->lista[i];
+//     }
+//     for(int i = 0; i < tam; i++){
+//         if(aux[i].cor == BRANCO){
+//             visita_DFS(grafo, aux, i, &visita);
+//         }
+//     }
+//     //retornar o que?? // NÃO ESTÁ FUNCIONANDO ESTA MERDA
+//     for(int i = 0; i < tam; i++){
+//         printf("%d(%d , %d) : ordem %d : pai %d(%d , %d)\n", i, aux[i].x, aux[i].y, aux[i].ordem, aux[i].pai, aux[aux[i].ordem].x, aux[aux[i].ordem].y);
+//     }
 }
 
 /* main */
