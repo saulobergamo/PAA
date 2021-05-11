@@ -96,7 +96,7 @@ void busca_DFS(Grafo* grafo){
 	Node aux[tam];
 	for(int i = 0; i < tam; i++){
 		aux[i].pai = -1;
-		aux[i] = grafo->lista[i];
+		aux[i] = *grafo->lista[i];
 	}
 	for(int i = 0; i < tam; i++){
 		if(aux[i].pai = -1)visita_DFS(grafo, aux, i, &visita);
