@@ -17,36 +17,38 @@
 #include <time.h>
 #include <stdbool.h>
 
+/*Define a coloração para visita em cada vértice durante a busca em profundidade*/
 #define BRANCO 0
 #define CINZA 1
 #define PRETO 2
 
+/*Variável para armazenar o tamanho do grafo e vetor auxiliar utilizado pelas
+funções de preenchimento e impressão de vetores, matrizes e listas de adjacência*/
 static int tam;
 
-// Estrutura do nó/vértice utilizado
+/*Estrutura do nó/vértice utilizado*/
 typedef struct node{
-    int x;
+    int x;	   	 //Ponto é representado por x e y -> P = (x, y)
     int y;
-    int pai;        //atributsos utilizados
-    float chave;    //para a função meuPrim
-    bool agm;       // -> que computa a AGM
-    int cor;
-    int ordem;
-    int f;
-    int pos;
-    struct node* prox;
+    int pai;      	 //Atributsos utilizados para a função meuPrim -> que computa a AGM 
+    float chave;   	 //chave é o peso da aresta, a distância euclidiana do vértice atual para
+    bool agm;      	 //o vértice mais próximo. Chave é atualizada a cada passagem de PRIM  
+    int cor;	    	 //Atributo cor utilizado para busca em profundidade -> DFS
+    int ordem;	   	 //Ordem final da busca em profundidade		
+    int pos;	   	 //Armazea a posição inicial de cada ponto P = (x, y)
+    struct node* prox;	 //Ponteiro para o próximo nó/vértice -> para listas de adjacência
 }Node;
 
-/*  Estrutura para cada aresta, comtempla o nó/vértice corrente, 
-    um ponteiro para o próximo nó/vértice a ser utilizado em 
-    uma lista de adjacências e o peso da aresta/arco         */
+/*Estrutura para cada aresta, comtempla o nó/vértice corrente, um ponteiro para o próximo
+nó/vértice a ser utilizado em uma lista de adjacências e o peso da aresta/arco. Esta estrutura 
+não foi utilizada, optou-se por utilizar a estrutura nó com atributos adicionais para cumprir o mesmo papel*/
 typedef struct edge{
     Node current;
     float peso;
     Node* prox;
 }Edge;
 
-/*  Estrutura de um grafo  */
+/*Estrutura de um grafo  */
 typedef struct grafo{
     int a;
     int v;
@@ -69,57 +71,41 @@ void free_Grafo(Grafo* grafo);
 Grafo* criar_grafo();
 
 void visita_DFS(Grafo* grafo, Node* aux, int i, int* visita){
-//     aux[i].cor = CINZA;
-//     *visita = *visita + 1;
-//     aux[i].ordem = *visita;
-//     Node* temp;
-//     for(temp = grafo->lista[i]; temp != NULL; temp = temp->prox){
-//         if(aux[temp->pos].cor == BRANCO){
-//             aux[temp->pos].pai = i;// atualiza o pai aqui????
-//             visita_DFS(grafo, aux, temp->pos, visita);
-//         }
-//     }
-//     aux[i].cor = PRETO;
-	*visita = *visita + 1;
-	aux[i].ordem = *visita;
-	for(temp = grafo->lista[i]; temp != NULL; temp = temp->prox){
-		if(aux[temp->pos].cor == -1){
-			visita_DFS(grafo, aux, temp->pos, visita);
-		}
-	}
-	
-	
+    aux[i].cor = CINZA;
+    *visita = *visita + 1;
+    aux[i].ordem = *visita;
+    Node* temp;
+    for(temp = grafo->lista[i]; temp != NULL; temp = temp->prox){
+        if(aux[temp->pos].cor == BRANCO){
+            aux[temp->pos].pai = i;// atualiza o pai aqui????
+            visita_DFS(grafo, aux, temp->pos, visita);
+        }
+    }
+    aux[i].cor = PRETO;		
 }
 
 void busca_DFS(Grafo* grafo){
     int visita = 0;
-	Node aux[tam];
-	for(int i = 0; i < tam; i++){
-		aux[i].pai = -1;
-		aux[i] = *grafo->lista[i];
-	}
-	for(int i = 0; i < tam; i++){
-		if(aux[i].pai = -1)visita_DFS(grafo, aux, i, &visita);
-	}
-//     Node* aux = (Node*)malloc(sizeof(Node));
 
-//     for(int i = 0; i < tam; i++){
-//         aux[i].cor = BRANCO;
-//         aux[i].pai = -1;
-//         aux[i] = *grafo->lista[i];
-//     }
-//     for(int i = 0; i < tam; i++){
-//         if(aux[i].cor == BRANCO){
-//             visita_DFS(grafo, aux, i, &visita);
-//         }
-//     }
-//     //retornar o que?? // NÃO ESTÁ FUNCIONANDO ESTA MERDA
-//     for(int i = 0; i < tam; i++){
-//         printf("%d(%d , %d) : ordem %d : pai %d(%d , %d)\n", i, aux[i].x, aux[i].y, aux[i].ordem, aux[i].pai, aux[aux[i].ordem].x, aux[aux[i].ordem].y);
-//     }
+    Node* aux = (Node*)malloc(sizeof(Node));
+
+    for(int i = 0; i < tam; i++){
+        aux[i].cor = BRANCO;
+        aux[i].pai = -1;
+        aux[i] = *grafo->lista[i];
+    }
+    for(int i = 0; i < tam; i++){
+        if(aux[i].cor == BRANCO){
+            visita_DFS(grafo, aux, i, &visita);
+        }
+    }
+    //retornar o que?? // NÃO ESTÁ FUNCIONANDO ESTA MERDA
+    for(int i = 0; i < tam; i++){
+        printf("%d(%d , %d) : ordem %d : pai %d(%d , %d)\n", i, aux[i].x, aux[i].y, aux[i].ordem, aux[i].pai, aux[aux[i].ordem].x, aux[aux[i].ordem].y);
+    }
 }
 
-/* main */
+/*Função principal - recebe uma entrada tipo .txt contendo os pontos de interesse para o porblema do caixeiro viajante (uma aproximação)*/
 int main(int argc, char* argv[]){
     Node* vetor;
     Edge** matriz;
@@ -142,12 +128,10 @@ int main(int argc, char* argv[]){
     return 0;
 }
 
-/* Função que abre o arquivo de entrada (input.txt), contendo
-n pontos (x , y). Guarda a primeira linha que contém o número
-  de pontos em uma variável global estática (static tam) que 
-  poderá ser acessada por todas as funções a qualquer tempo,
-inicializa os atributos pai/chave/agm que serçao utilizados 
-na função meuPrim para computar a Árvore Geradora Mínima */
+/*Função que abre o arquivo de entrada (input.txt), contendo n pontos P = (x , y). Guarda a primeira linha que contém o número
+de pontos em uma variável global estática (static tam) que poderá ser acessada por todas as funções a qualquer tempo, inicializa
+os atributos pai/chave/agm/pos que serão utilizados na função meuPrim para computar a Árvore Geradora Mínima, fecha o arquivo
+e retorna o um vetor contendo todos os pontos P = (x, y)*/
 Node* recebe_nodes(char* arquivo){
     FILE* entrada = fopen(arquivo, "r");
     int n = 30;
@@ -171,16 +155,16 @@ Node* recebe_nodes(char* arquivo){
         vetor[i].pai = 0;
         vetor[i].chave = __FLT_MAX__;
         vetor[i].agm = false;
+	veto[i].pos = i;
     }
 
     fclose(entrada);
     return vetor;   
 }
 
-/* preenche uma matriz com os custos(distância euclidiana entre dois pontos)
-calcula menos da metade da matriz, sendo E < v²/2. Um grafo denso e não direcional
-pode ser representado por uma matriz de adjacências, que por sua vez é simétrica,
-por este motivo é preciso apenas a passagem em n*(n-1)/2 vértices/arcos*/
+/* preenche uma matriz com os custos(distância euclidiana entre dois pontos) calcula menos da metade da matriz, sendo
+E < v²/2. Um grafo denso e não direcional pode ser representado por uma matriz de adjacências, nesse caso uma matriz 
+simétrica, por este motivo é preciso apenas a passagem em n*(n-1)/2 vértices/arcos*/
 Edge** preenche_matriz(Node* vetor){
     Edge **m;
     m = (Edge**)malloc(tam * sizeof(Edge*));
@@ -212,6 +196,7 @@ int chave_m(Node* vetor){
     return min2;
 }
 
+/*Algoritmo de Prim aplicado à matriz de adjacência contendo chaves/pesos que são atualizados à cada passagem*/
 void meuPrim(Node* vetor, Edge** matriz){
     vetor[0].chave = 0;
     vetor[0].pai = -1;
