@@ -86,12 +86,12 @@ int main(int argc, char* argv[]){
     Node* busca = (Node*)malloc(tam * sizeof(Node));      
     busca = busca_DFS(grafo);                             //guarda em um vetor a busca em profundidade no grafo gerado pela AGM
     ordenaMergeSort(busca, 0, tam);                       //ordena, a partir da ordem de visitação, o vetor da busca
-    
+
     grava_AGM(vetor, busca);                              //registra o arquivo de saída para a AGM
     grava_Ciclo(busca);                                   //registra o arquivo de saída para o ciclo
 
     printf("%.6f %.6f\n\n", ((float)(clock()-tempo))/CLOCKS_PER_SEC, (custoAGM(busca)*100));//imprime a saída com tempo total e custo do caminho encontrado
-   
+   free(grafo);
     return 0;
 }
 
@@ -263,7 +263,6 @@ void incluir_arestas(Grafo* grafo, Node* vetor){
         else{
             grafo->lista[i] = novo_node;
         }
-        free(novo_node);                                            //Libera o espaço alocado
         grafo->a += grafo->a;                                       //Atualiza o número de arestas criadas
     }   
 }
