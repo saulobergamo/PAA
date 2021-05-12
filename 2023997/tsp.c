@@ -67,7 +67,7 @@ void grava_AGM(Node vetor[], Node busca[]);
 void visita_DFS(Grafo* grafo, Node* aux, int i, int* visita);
 Node* busca_DFS(Grafo* grafo);
 void grava_Ciclo(Node vetor[]);
-
+float custo_ciclo(Node* vetor, float** matriz);
 
 /*Função principal - recebe uma entrada tipo .txt contendo os pontos de interesse para o porblema do caixeiro viajante (uma aproximação)*/
 int main(int argc, char* argv[]){
@@ -77,7 +77,7 @@ int main(int argc, char* argv[]){
     
     vetor = recebe_nodes(argv[1]);                        //srecebe em 'vetor' os pontos do arquivo de entrada
     matriz = preenche_matriz(vetor);                      //recebe em 'matriz' os pesos das arestas (todos para todos)
-  
+
     meuPrim(vetor, matriz);                               //calcula a Árvore Geradora Mínimo(AGM) pelo algoritmo de Prim em uma matriz de adjacências
 
     Grafo* grafo = criar_grafo();                         //cria um grafo
@@ -86,12 +86,12 @@ int main(int argc, char* argv[]){
     Node* busca = (Node*)malloc(tam * sizeof(Node));      
     busca = busca_DFS(grafo);                             //guarda em um vetor a busca em profundidade no grafo gerado pela AGM
     ordenaMergeSort(busca, 0, tam);                       //ordena, a partir da ordem de visitação, o vetor da busca
-    
+
     grava_AGM(vetor, busca);                              //registra o arquivo de saída para a AGM
     grava_Ciclo(busca);                                   //registra o arquivo de saída para o ciclo
-
-    printf("%.6f %.6f\n\n", ((float)(clock()-tempo))/CLOCKS_PER_SEC, (custoAGM(busca)*100));//imprime a saída com tempo total e custo do caminho encontrado
-   
+ 
+    printf("%.6f %.6f\n\n", ((float)(clock()-tempo))/CLOCKS_PER_SEC, custo_ciclo(busca, matriz)*100);//imprime a saída com tempo total e custo do caminho encontrado
+   free(grafo);
     return 0;
 }
 
@@ -200,7 +200,7 @@ void imprime_matriz(float** matriz){
     printf("\n");
 }
 
-/* Função para retornar o custo total de um ciclo indicado por um vetor de pontos P = (x , y) */
+/* Função para retornar o custo total da AGM indicado por um vetor de pontos P = (x , y) */
 float custoAGM(Node* vetor){
     float custo = 0;
     for(int i = 0; i < tam; i++){
@@ -263,7 +263,6 @@ void incluir_arestas(Grafo* grafo, Node* vetor){
         else{
             grafo->lista[i] = novo_node;
         }
-        free(novo_node);                                            //Libera o espaço alocado
         grafo->a += grafo->a;                                       //Atualiza o número de arestas criadas
     }   
 }
@@ -395,4 +394,14 @@ void grava_Ciclo(Node vetor[]){
     }
     fprintf(ciclo, "%d %d\n", vetor[0].x, vetor[0].y);            //Repete o primeiro ponto para fechar o ciclo
     fclose(ciclo);
+}
+
+/* Função para retornar o custo total de um ciclo hamiltoniano indicado por um vetor de pontos P = (x , y) */
+float custo_ciclo(Node* vetor, float** matriz){               
+    float custo = 0;
+    for(int i = 1; i < tam; i++){                                   
+        custo = matriz[vetor[i-1].pos][vetor[i].pos] + custo;    //Busca na matriz de adjacências os pesos referentes à cada vértice indicado pelo vetor de entrada
+    }                                                            //Cada vértice, após ordenação para computar o ciclo, guarda no atributo 'pos' a posição incial
+    custo = matriz[vetor[0].pos][vetor[tam-1].pos] + custo;      //que se encontrava no vetor de entrada, sendo possível acessar o seu peso previamente calculado
+    return custo;                                                //e armazenado na matriz
 }
