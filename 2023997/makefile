@@ -7,4 +7,4 @@ tsp.o: tsp.c
 	gcc -c -Wall tsp.c
 
 clean:
-	rm tsp tsp.o tree.txt cycle.txt arvore.pdf ciclo.pdf pontos.pdf
+	rm tsp tsp.o tree.txt cycle.txt 
